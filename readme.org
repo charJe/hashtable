@@ -1,0 +1,87 @@
+#+title: Hashtable
+#+subtitle: 
+#+author: Charles Jackson
+#+date: 
+#+options: \n:t toc:nil num:nil tex:t latex:t
+#+latex_header: \setlength{\parindent}{0pt}
+#+latex_header: \usepackage[margin=0.75in]{geometry}
+You are welcome to use this for whatever as long as you credit me.
+
+* Building and Testing
+#+BEGIN_SRC sh
+  $ git clone git@github.com:charJe/hashtable.git
+  $ cd hashtable
+  $ make test
+  $ make run
+#+END_SRC
+You can then copy ~hashtable.o~ and ~hashtable.h~ into whatever project you want to use it in, or you can just copy ~hashtable.c~ and ~hashtable.h~ into your project and compile it into it.
+
+* Instructions
+
+** Creating hashtable
+Usually you want to create a hashtable like this
+#+BEGIN_SRC c
+newhashtable(name, key_type, value_type, initial_size, key_hash, key_equal);
+#+END_SRC
+Where ~name~ is the name of the hashtable, ~key_type~ is the type of the key (int, char*, or whatever), ~value_type~ is the type of the value (int, struct, or whatever), ~initial_size~ is the starting size (just estimate how big you will need, since the hashtable will re-size itself if it needs), ~key_hash~ is a function that will take in a ~key_type~ and output a unique integer, ~key_equal~ will take in two ~key_type~ and output ~0~ if they are equivalent. I've provided samples for ~key_hash~ and  ~key_equal~ for strings and integers. You can use theses or write your own. You must write your own for other types.
+
+*** Global hashtable
+If you want to have a global hashtable, the usual way is split up into two statements. The first goes outside main function.
+#+BEGIN_SRC c
+defhashtable(name, key_type, value_type)
+#+END_SRC
+And the second goes wherever you want to /initialize/ the hash table.
+#+BEGIN_SRC c
+inithashtable(name, initial_size, key_hash, key_equal)
+#+END_SRC
+
+** Adding to the hashtable
+#+BEGIN_SRC c
+puthash(hash, keyin, valuein)
+#+END_SRC
+
+** Getting values from the hashtable
+#+BEGIN_SRC c
+gethash(hash, keyin, valueout)
+#+END_SRC
+
+** Removing from hashtable
+There is no remove function at this time. Open an issue if you really need one.
+Otherwise, you can just use ~puthash()~ where ~valuein~ is ~NULL~.
+
+** Destroying hashtable
+#+BEGIN_SRC c
+deletehashtable(hash, delete_key, delete_value)
+#+END_SRC
+Where ~hash~ is the hashtable, ~delete_key~ is a function that takes a ~key_type~ and destroys it, and ~delete_value~ is a function that takes in a ~value_type~ and destroys it.
+
+* Example
+All this is from [[https://github.com/charJe/hashtable/test.c][test.c]].
+
+#+BEGIN_SRC c
+  /* creating a hashtable named `sloths` */
+  newhashtable(sloths, char*, int, 8, hashstr, strequal);
+#+END_SRC
+This creates a hash table named ~sloths~ with string keys and integer values.
+
+#+BEGIN_SRC c
+  /* adding to sloths' names and ages */
+  puthash(sloths, "George", 13);
+  puthash(sloths, "Johny", 12);
+  puthash(sloths, "Fred", 19);
+#+END_SRC
+This puts the key-value pairs into the ~sloths~ hashtable.
+
+#+BEGIN_SRC c
+  /* retriving some sloth's ages and printing them */
+  int age;
+  gethash(sloths, "George", age);
+  printf("George is %d years old\n", age);
+#+END_SRC
+This puts the age of the sloth name George into the integer variable named age, then prints it.
+
+#+BEGIN_SRC c
+  /* deleteing the hashtable named `sloths` */
+  deletehashtable(sloths, free, free);
+#+END_SRC
+This cleans up the hashtable named ~sloths~. You can't use it after this unless you use ~inithashtable()~ to reinitialize it.
