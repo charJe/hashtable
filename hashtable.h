@@ -3,7 +3,6 @@
  */
 #ifndef HASHTABLE_H
 #  define HASHTABLE_H
-
 #  define MAX_LOADFACTOR 0.75
 
 #  define defhashtable(name, key_type, value_type)                      \
@@ -32,8 +31,8 @@
             initial_size, sizeof(typeof(name->table[0])));              \
     } while (0)
 
-#  define newhashtable(name, key_type, value_type,                      \
-                       initial_size, key_hash, key_equal)               \
+#  define newhashtable(name, key_type, value_type, initial_size,        \
+                       key_hash, key_equal)                             \
     defhashtable(name, key_type, value_type);                           \
     inithashtable(name, initial_size, key_hash, key_equal)
 
@@ -102,6 +101,19 @@
             ++factor;                                                   \
         }                                                               \
     } while(0)
+
+#  define deletehashtable(hash, delete_key, delete_value)    \
+    do {                                                     \
+        for (int i = 0; i < hash->length; ++i) {             \
+            if (hash->table[i]) {                            \
+                delete_key(hash->table[i]->key);             \
+                delete_value(hash->table[i]->value);         \
+                free(hash->table[i]);                        \
+            }                                                \
+        }                                                    \
+        free(hash->table);                                   \
+        free(hash);                                          \
+    } while (0)
 
 int isprime(int num);
 int hashstr(char*);

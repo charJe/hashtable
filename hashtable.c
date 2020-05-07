@@ -1,3 +1,6 @@
+/**
+ * @author Charles Jackson
+ */
 #include <string.h>
 #include <math.h>
 

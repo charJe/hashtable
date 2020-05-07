@@ -22,6 +22,7 @@ int main(int argc, char** argv) {
     printf("George is %d years old\n", age);
     gethash(sloths, "Dash", age);
     printf("Dash is %d years old\n", age);
+    deletehashtable(sloths, free, free);
 }
 
 
