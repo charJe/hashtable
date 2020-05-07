@@ -23,7 +23,7 @@ Usually you want to create a hashtable like this
 #+BEGIN_SRC c
 newhashtable(name, key_type, value_type, initial_size, key_hash, key_equal);
 #+END_SRC
-Where ~name~ is the name of the hashtable, ~key_type~ is the type of the key (int, char*, or whatever), ~value_type~ is the type of the value (int, struct, or whatever), ~initial_size~ is the starting size (just estimate how big you will need, since the hashtable will re-size itself if it needs), ~key_hash~ is a function that will take in a ~key_type~ and output a unique integer, ~key_equal~ will take in two ~key_type~ and output ~0~ if they are equivalent. I've provided samples for ~key_hash~ and  ~key_equal~ for strings and integers. You can use theses or write your own. You must write your own for other types.
+Where ~name~ is the name of the hashtable, ~key_type~ is the type of the key (int, char*, or whatever), ~value_type~ is the type of the value (int, struct, or whatever), ~initial_size~ is the starting size (just estimate how big you will need, since the hashtable will re-size itself if it needs), ~key_hash~ is a function that will take in a ~key_type~ and output a unique integer, ~key_equal~ will take in two ~key_type~ and output ~0~ if they are equivalent. I've provided samples for ~key_hash~ and  ~key_equal~ for strings and integers. You can use these or write your own. You must write your own for other types.
 
 *** Global hashtable
 If you want to have a global hashtable, the usual way is split up into two statements. The first goes outside main function.
@@ -58,7 +58,7 @@ deletehashtable(hash, delete_key, delete_value);
 Where ~hash~ is the hashtable, ~delete_key~ is a function that takes a ~key_type~ and destroys it, and ~delete_value~ is a function that takes in a ~value_type~ and destroys it.
 
 * Example
-All this is from [[https://github.com/charJe/hashtable/test.c][test.c]].
+All this is from [[https://github.com/charJe/hashtable/blob/master/test.c][test.c]].
 
 This creates a hash table named ~sloths~ with string keys and integer values.
 #+BEGIN_SRC c
