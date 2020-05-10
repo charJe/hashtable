@@ -38,7 +38,8 @@
 
 #  define puthash(hash, keyin, valuein)                                 \
     do {                                                                \
-        if (hash->size / (double) hash->length >= MAX_LOADFACTOR) {     \
+        if ((hash->size + 1) /                                          \
+            (double) hash->length >= MAX_LOADFACTOR) {                  \
             rehash(hash);                                               \
         }                                                               \
         puthashnorehash(hash, keyin, valuein);                          \
@@ -64,6 +65,9 @@
     do {                                                                \
         int newsize = hash->length * 2;                                 \
         int oldlength = hash->length;                                   \
+        while (!isprime(hash->length)) {                                \
+            hash->length += 1;                                          \
+        }                                                               \
         typeof(hash->table) oldtable = hash->table;                     \
         hash->table = calloc(newsize, sizeof(typeof(hash->table[0])));  \
         hash->length = newsize;                                         \
