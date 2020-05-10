@@ -24,7 +24,7 @@ int hashstr(char * str) {
     return hash;
 }
 
-int strequal (char* a, char* b) {
+int strequal(char* a, char* b) {
     return strcmp(a, b);
 }
 
