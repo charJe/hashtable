@@ -5,45 +5,48 @@
 #  define HASHTABLE_H
 #  define MAX_LOADFACTOR 0.75
 
-#  define defhashtable(name, key_type, value_type)  \
-    typedef struct {                                \
-        int size;                                   \
-        int length;                                 \
-        struct {                                    \
-            key_type* key;                          \
-            value_type* value;                      \
-        }** table;                                  \
-        int(*keyhash)(key_type);                    \
-        int(*keyequal)(key_type, key_type);         \
-    } name##hashtype;                               \
+#  define defhashtable(name, key_type, value_type)                      \
+    typedef struct {                                                    \
+        int size;                                                       \
+        int length;                                                     \
+        struct {                                                        \
+            key_type* key;                                              \
+            value_type* value;                                          \
+        }** table;                                                      \
+        int(*keyhash)(key_type);                                        \
+        int(*keyequal)(key_type, key_type);                             \
+    } name##hashtype;                                                   \
     name##hashtype* name
 
-#  define inithashtable(name, initial_size, key_hash, key_equal) {  \
-        name = malloc(sizeof(name##hashtype));                      \
-        /* length is the length of the internal array */            \
-        name->length = initial_size;                                \
-        /* size is how many elements are present */                 \
-        name->size = 0;                                             \
-        name->keyhash = key_hash;                                   \
-        name->keyequal = key_equal;                                 \
-        name->table = calloc(                                       \
-            initial_size, sizeof(typeof(name->table[0])));          \
-    }
+#  define inithashtable(name, initial_size, key_hash, key_equal)        \
+    do {                                                                \
+        name = malloc(sizeof(name##hashtype));                          \
+        /* length is the length of the internal array */                \
+        name->length = initial_size;                                    \
+        /* size is how many elements are present */                     \
+        name->size = 0;                                                 \
+        name->keyhash = key_hash;                                       \
+        name->keyequal = key_equal;                                     \
+        name->table = calloc(                                           \
+            initial_size, sizeof(typeof(name->table[0])));              \
+    } while (0)
 
-#  define newhashtable(name, key_type, value_type, initial_size,    \
-                       key_hash, key_equal)                         \
-    defhashtable(name, key_type, value_type);                       \
+#  define newhashtable(name, key_type, value_type, initial_size,        \
+                       key_hash, key_equal)                             \
+    defhashtable(name, key_type, value_type);                           \
     inithashtable(name, initial_size, key_hash, key_equal)
 
-#  define puthash(hash, keyin, valuein) {               \
-        if ((hash->size + 1) /                          \
-            (double) hash->length >= MAX_LOADFACTOR) {  \
-            rehash(hash);                               \
-        }                                               \
-        puthashnorehash(hash, keyin, valuein);          \
-    }
+#  define puthash(hash, keyin, valuein)                                 \
+    do {                                                                \
+        if ((hash->size + 1) /                                          \
+            (double) hash->length >= MAX_LOADFACTOR) {                  \
+            rehash(hash);                                               \
+        }                                                               \
+        puthashnorehash(hash, keyin, valuein);                          \
+    } while (0)
 
-#  define gethash(hash, keyin, valueout) {                              \
+#  define gethash(hash, keyin, valueout)                                \
+    do {                                                                \
         int index = abs(hash->keyhash(keyin)) % hash->length;           \
         int factor = 0;                                                 \
         while (factor <= hash->length) {                                \
@@ -56,9 +59,10 @@
             index = (int)((index + pow(2.0, factor))) % hash->length;   \
             ++factor;                                                   \
         }                                                               \
-    }
+    } while(0)
 
-#  define rehash(hash) {                                                \
+#  define rehash(hash)                                                  \
+    do {                                                                \
         int newsize = hash->length * 2;                                 \
         int oldlength = hash->length;                                   \
         while (!isprime(hash->length)) {                                \
@@ -75,9 +79,10 @@
             }                                                           \
         }                                                               \
         free(oldtable);                                                 \
-    }
+    } while(0)
 
-#  define puthashnorehash(hash, keyin, valuein) {                       \
+#  define puthashnorehash(hash, keyin, valuein)                         \
+    do {                                                                \
         int index = abs(hash->keyhash(keyin)) % hash->length;           \
         int factor = 0;                                                 \
         while (factor < hash->length) {                                 \
@@ -99,19 +104,20 @@
             index = (int)((index + pow(2, factor))) % hash->length;     \
             ++factor;                                                   \
         }                                                               \
-    }
+    } while(0)
 
-#  define deletehashtable(hash, delete_key, delete_value) { \
-        for (int i = 0; i < hash->length; ++i) {            \
-            if (hash->table[i]) {                           \
-                delete_key(hash->table[i]->key);            \
-                delete_value(hash->table[i]->value);        \
-                free(hash->table[i]);                       \
-            }                                               \
-        }                                                   \
-        free(hash->table);                                  \
-        free(hash);                                         \
-    }
+#  define deletehashtable(hash, delete_key, delete_value)    \
+    do {                                                     \
+        for (int i = 0; i < hash->length; ++i) {             \
+            if (hash->table[i]) {                            \
+                delete_key(hash->table[i]->key);             \
+                delete_value(hash->table[i]->value);         \
+                free(hash->table[i]);                        \
+            }                                                \
+        }                                                    \
+        free(hash->table);                                   \
+        free(hash);                                          \
+    } while (0)
 
 int isprime(int num);
 int hashstr(char*);
